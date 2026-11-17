@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A Little Game For My Love</title>
+<style>
+:root{--bg:#fff0f3;--card:#ffffff;--ink:#4a1d2e;--pink:#ff4d79;--soft:#ffd6e0;--muted:#a35b72;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2a0f1b;--card:#3d1828;--ink:#ffe4ec;--soft:#5a2339;--muted:#e8a3b9}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,'Times New Roman',serif;text-align:center;overflow-x:hidden}
+.wrap{max-width:480px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:2rem;margin:10px 0 4px;color:var(--pink)}
+p{line-height:1.5}
+.sub{color:var(--muted);margin:0 0 14px}
+button{font:inherit;border:0;border-radius:30px;background:var(--pink);color:#fff;padding:13px 28px;font-size:1.05rem;cursor:pointer;box-shadow:0 4px 14px rgba(255,77,121,.4)}
+button:active{transform:scale(.96)}
+#intro .big{font-size:4.5rem;animation:beat 1.2s infinite}
+@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.hide{display:none!important}
+#bar{height:14px;background:var(--soft);border-radius:10px;overflow:hidden;margin:8px 0}
+#fill{height:100%;width:0;background:linear-gradient(90deg,#ff8fab,var(--pink));transition:width .3s}
+#field{position:relative;height:300px;background:var(--card);border-radius:20px;overflow:hidden;box-shadow:inset 0 0 0 2px var(--soft);touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.h{position:absolute;bottom:-50px;font-size:2.4rem;cursor:pointer;animation:rise linear forwards;padding:6px}
+@keyframes rise{to{transform:translateY(-370px)}}
+.pop{animation:pop .3s forwards!important}
+@keyframes pop{to{transform:scale(2.2);opacity:0}}
+#notes{margin-top:18px;display:grid;gap:10px}
+.note{background:var(--card);border-radius:16px;padding:14px 16px;box-shadow:0 2px 10px rgba(255,77,121,.15);text-align:left}
+.note.locked{opacity:.55;text-align:center}
+.note.new{animation:in .6s}
+@keyframes in{from{transform:scale(.8);opacity:0}}
+#final{margin-top:20px}
+#final .card{background:var(--card);border-radius:20px;padding:22px 18px;box-shadow:0 4px 18px rgba(255,77,121,.25)}
+.row{display:flex;gap:14px;justify-content:center;align-items:center;min-height:90px;position:relative}
+#no{background:var(--muted);box-shadow:none}
+#bonus{margin-top:22px;display:grid;gap:16px}
+#bonus .card{background:var(--card);border-radius:20px;padding:20px 16px;box-shadow:0 4px 18px rgba(255,77,121,.2)}
+#bonus h2{margin:0 0 6px;color:var(--pink);font-size:1.3rem}
+#lm{height:22px;background:var(--soft);border-radius:12px;overflow:hidden;margin:12px 0}
+#lmf{height:100%;width:0;background:linear-gradient(90deg,#ff8fab,var(--pink))}
+#reason{min-height:56px;margin:12px 0;font-size:1.1rem;color:var(--ink)}
+#kiss{font-size:3rem;background:none;box-shadow:none;padding:6px 14px}
+.cf{position:fixed;top:-30px;font-size:1.8rem;pointer-events:none;animation:fall 3s linear forwards;z-index:9}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+</style></head>
+<body><div class="wrap">
+
+<section id="intro">
+<div class="big">💌</div>
+<h1>Hey, My Love</h1>
+<p class="sub">I made you a tiny game.<br>Catch the hearts to unlock what’s in mine. 💕</p>
+<button id="start">Play with me</button>
+</section>
+
+<section id="game" class="hide">
+<h1>Catch my hearts</h1>
+<p class="sub" id="tip">Tap the floating hearts! Every 3 unlocks a secret.</p>
+<div id="bar"><div id="fill"></div></div>
+<div id="field"></div>
+<div id="notes"></div>
+</section>
+
+<section id="final" class="hide">
+<div class="card">
+<div style="font-size:3rem">💖</div>
+<h1>One last thing…</h1>
+<p>You’ve opened every piece of my heart. Thank you for being my safe place, my best friend and my favorite person.</p>
+<p><b>Will you keep choosing me, every single day?</b></p>
+<div class="row" id="row"><button id="yes">Yes, always 💗</button><button id="no">No 🙈</button></div>
+<p id="win" class="hide" style="font-size:1.2rem;color:var(--pink)">I knew it! 🥹 I love you to the moon, the stars, and every pizza in between. Forever yours. 💋</p>
+</div>
+</section>
+
+<section id="bonus" class="hide">
+<div class="card"><h2>📏 Love-o-meter</h2><p class="sub" style="margin:0">Let’s measure how much I love you.</p>
+<div id="lm"><div id="lmf"></div></div><p id="lmt" class="sub" style="margin:0 0 10px">Ready…</p><button id="lmb">Measure</button></div>
+<div class="card"><h2>🫙 Reasons I love you</h2><div id="reason">Pull one from the jar 💕</div><button id="rb">Pull a reason</button></div>
+<div class="card"><h2>😘 Kiss counter</h2><p class="sub" style="margin:0">Tap to send me kisses</p><button id="kiss">😘</button><p id="kc" style="margin:4px 0 0">0 kisses sent</p></div>
+<p class="sub">Made with all my love, just for you. 💖</p>
+</section>
+
+</div>
+<script>
+const NOTES=[
+"You make ordinary days feel like my favorite movie. 🎬",
+"Your smile fixes my worst days in about two seconds. 😊",
+"I love how silly we can be together, no filter needed. 🤪",
+"Coupon unlocked: one free cuddle, anytime, no questions asked. 🧸",
+"Every day with you is my favorite day, and it keeps getting better. 💞"];
+const GOAL=15,PER=3;
+let score=0,timer=null;
+const $=id=>document.getElementById(id);
+function renderNotes(){
+  const n=Math.floor(score/PER);
+  $('notes').innerHTML=NOTES.map((t,i)=>i<n
+    ?`<div class="note ${i===n-1&&score%PER===0?'new':''}">${t}</div>`
+    :`<div class="note locked">🔒 Secret #${i+1}, ${(i+1)*PER-score} hearts to go</div>`).join('');
+}
+function spawn(){
+  const f=$('field'),h=document.createElement('div');
+  const bonus=Math.random()<.12;
+  h.className='h';h.textContent=bonus?'💌':['❤️','💗','💖','💕','💘'][Math.floor(Math.random()*5)];
+  h.style.left=Math.random()*(f.clientWidth-55)+'px';
+  h.style.animationDuration=(3+Math.random()*2.5)+'s';
+  const grab=e=>{e.preventDefault();if(h.dataset.d)return;h.dataset.d=1;h.classList.add('pop');
+    add(bonus?2:1);setTimeout(()=>h.remove(),300)};
+  h.addEventListener('pointerdown',grab);
+  h.addEventListener('animationend',e=>{if(e.animationName==='rise')h.remove()});
+  f.appendChild(h);
+}
+function add(n){
+  const before=Math.floor(score/PER);
+  score=Math.min(GOAL,score+n);
+  $('fill').style.width=score/GOAL*100+'%';
+  if(Math.floor(score/PER)>before){
+    renderNotes();$('tip').textContent='Secret unlocked! Keep going 💕';
+    sprinkle(6);
+  }
+  if(score>=GOAL){
+    clearInterval(timer);$('field').innerHTML='<div style="padding-top:110px;font-size:1.3rem">You caught my whole heart 🥰</div>';
+    setTimeout(()=>{$('final').classList.remove('hide');$('final').scrollIntoView({behavior:'smooth'})},900);
+  }
+}
+function sprinkle(n){
+  for(let i=0;i<n;i++){const c=document.createElement('div');c.className='cf';
+    c.textContent=['💖','✨','💕','🌹'][i%4];c.style.left=Math.random()*95+'vw';
+    c.style.animationDelay=Math.random()*.6+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),3800)}
+}
+$('start').onclick=()=>{
+  $('intro').classList.add('hide');$('game').classList.remove('hide');
+  renderNotes();spawn();timer=setInterval(spawn,650);
+};
+// the cheeky "No" button runs away
+function dodge(e){
+  if(e)e.preventDefault();
+  const r=$('row'),b=$('no');
+  b.style.position='absolute';
+  b.style.left=Math.random()*(r.clientWidth-b.offsetWidth)+'px';
+  b.style.top=Math.random()*(r.clientHeight-b.offsetHeight)+'px';
+}
+$('no').addEventListener('pointerenter',dodge);
+$('no').addEventListener('pointerdown',dodge);
+$('yes').onclick=()=>{
+  $('row').classList.add('hide');$('win').classList.remove('hide');
+  sprinkle(40);
+  $('bonus').classList.remove('hide');
+  setTimeout(()=>$('bonus').scrollIntoView({behavior:'smooth'}),1200);
+};
+let lmBusy=false;
+$('lmb').onclick=()=>{
+  if(lmBusy)return;lmBusy=true;let p=0;const t=$('lmt'),f=$('lmf');
+  const iv=setInterval(()=>{
+    p+=2;f.style.width=Math.min(p,100)+'%';t.textContent='Measuring… '+Math.min(p,100)+'%';
+    if(p>=100){clearInterval(iv);t.textContent='⚠️ ERROR: meter broken. Love = infinity + 1 💥';sprinkle(10);lmBusy=false}
+  },40);
+};
+const REASONS=['The way you laugh at your own jokes before the punchline. 😂','You remember the little things about me.','Your hugs feel like home. 🏡','You’re beautiful inside and out. ✨','You make me want to be a better person.','You stay by my side on hard days.','The cute face you make when you’re thinking. 🤔','You turn boring errands into adventures.','Your voice is my favorite sound. 🎶','You’re my best friend and my best everything.','Because it’s you. Just you. 💗'];
+let ri=-1;
+$('rb').onclick=()=>{let n;do{n=Math.floor(Math.random()*REASONS.length)}while(n===ri);ri=n;$('reason').textContent=REASONS[n]};
+let kc=0;
+$('kiss').onclick=e=>{
+  kc++;$('kc').textContent=kc+(kc===1?' kiss':' kisses')+' sent'+(kc>=10?' 🥰 I’m blushing!':'');
+  const c=document.createElement('div');c.className='cf';c.textContent='💋';
+  c.style.left=(20+Math.random()*60)+'vw';c.style.top=(e.clientY-20)+'px';c.style.animationDuration='1.6s';
+  document.body.appendChild(c);setTimeout(()=>c.remove(),1800);
+};
+</script>
+</body></html>
